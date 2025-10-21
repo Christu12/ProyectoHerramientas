@@ -36,7 +36,7 @@ namespace MiApi.Repository.Implements
         {
             try
             {
-                await _db.ExecuteAsync($"DELETE FROM Persona WHERE Id={id}");                
+                await _db.ExecuteAsync($"DELETE FROM Usuario WHERE Id={id}");                
                 return true;
             }
             catch (Exception)
