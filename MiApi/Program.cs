@@ -20,6 +20,9 @@ namespace MiApi
 
             builder.Services.AddTransient<IUsuarioQueries, UsuarioQueries>();
             builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
+            builder.Services.AddTransient<IProductoQueries, ProductoQueries>();
+            builder.Services.AddTransient<IProductoRepository, ProductoRepository>();
+
 
 
             builder.Services.AddScoped<IDbConnection>(options =>
