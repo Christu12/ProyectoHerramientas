@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MiApi.Models
 {
-    internal class Venta
+    public class Venta
     {
         public int IdVenta { get; set; }
         public DateTime Fecha { get; set; }

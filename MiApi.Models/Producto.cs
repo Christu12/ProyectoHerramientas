@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Dapper.Contrib.Extensions;
 
 namespace MiApi.Models
 {
-    internal class Producto
+    [Table("dbo.Producto")]
+    public class Producto
     {
+        [Key]
         public int IdProducto { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public string? Descripcion { get; set; }
