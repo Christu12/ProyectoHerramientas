@@ -22,7 +22,7 @@ namespace MiApi.Query.Implements
         {
             try
             {
-                string sql = "SELECT * FROM Personas";
+                string sql = "SELECT * FROM Usuario";
                 var rs = await _db.QueryAsync<Usuario>(sql);
                 return rs;
             }
