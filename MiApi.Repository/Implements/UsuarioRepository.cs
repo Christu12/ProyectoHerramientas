@@ -34,15 +34,10 @@ namespace MiApi.Repository.Implements
 
         public async Task<bool> Delete(int id)
         {
-            try
-            {
-                await _db.ExecuteAsync($"DELETE FROM Usuario WHERE Id={id}");                
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            var usuario = await _db.GetAsync<Usuario>(id);
+            if (usuario == null) return false;
+
+            return await _db.DeleteAsync(usuario);
         }
 
         public async Task<bool> Update(Usuario u)
