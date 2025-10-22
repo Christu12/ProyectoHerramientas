@@ -37,8 +37,7 @@ namespace MiApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ListarPersona()
         {
-            //_animal.Morir();
-            //var rs = _db.Personas.ToList();
+            
             var rsDapper = await _usuarioQueries.GetAll();
             return Ok(rsDapper);
         }
@@ -87,19 +86,15 @@ namespace MiApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Borrar(int id)
         {
-            try
+            
             {
                 bool rs = await _usuarioRepository.Delete(id);
-                if (rs)
-                    return NoContent();
-                else
-                    return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-            catch (Exception)
-            {
+                if (!rs)
+                    return NotFound($"No se encontró el usuario con ID {id}.");
 
-                throw;
+                return Ok($"Usuario con ID {id} eliminado correctamente.");
             }
+            
         }
 
 
@@ -114,19 +109,9 @@ namespace MiApi.Controllers
         {
             try
             {
-                if (id == u.IdUsuario)
-                {
-                    bool rs = await _usuarioRepository.Update(u);
-                    if (rs)
-                        return Ok(u);
-                    else
-                        return StatusCode(StatusCodes.Status500InternalServerError);
-
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                u.IdUsuario = id;
+                bool rs = await _usuarioRepository.Update(u);
+                return Ok(u);
             }
             catch (Exception)
             {
