@@ -24,9 +24,9 @@ namespace MiApi
 
             builder.Services.AddScoped<IDbConnection>(options =>
             {
-                return new SqlConnection(builder.Configuration.GetConnectionString("SqlConnection"));
+                return new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-
+            builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
                 string archivo = "MiApi.xml";
