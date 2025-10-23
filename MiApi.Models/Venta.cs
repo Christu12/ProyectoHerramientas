@@ -14,7 +14,7 @@ namespace MiApi.Models
 
         public DateTime Fecha { get; set; } = DateTime.Now;
 
-        [Required]
+        
         public int? IdUsuario { get; set; }
     }
 }
