@@ -2,6 +2,7 @@
 using MiApi.Query.Interfaces;
 using MiApi.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace MiApi.Controllers
 {
@@ -28,12 +29,15 @@ namespace MiApi.Controllers
         }
 
         /// <summary>
-        /// Metodo que lista todos los usuarios
+        /// Buscar usuario por id
         /// </summary>
-        /// <response code="200">Lista de usuarios</response>
-        /// <response code="500">Error procesando la peticion</response>
+        /// <param name="id">Id del usuario a buscar</param>
+        /// <response code="200">Cuando se encuentra el usuario</response>
+        /// <response code="404">El usuario no existe</response>
+        /// <response code="500">Error procesando la petición</response>
         [HttpGet]
-        [ProducesResponseType(typeof(List<Usuario>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ListarPersona()
         {
@@ -42,48 +46,51 @@ namespace MiApi.Controllers
             return Ok(rsDapper);
         }
 
-        /// <summary>
-        /// Buscar usuario por id
-        /// </summary>
-        /// <param name="id">Id usuario a buscar</param>
-        /// <response code="200">Cuando se encuentra el usuario</response>
-        /// <response code="404">El Usuario no existe</response>
-        /// <response code="500">Error procesando la peticion</response>
 
-        [HttpGet("ById/{id}")]
-        [ProducesResponseType(typeof(Usuario), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-     
+
+
+
 
         /// <summary>
-        /// Add persona con dapper
+        /// Crea un nuevo usuario en el sistema.
         /// </summary>
-        /// <param name="p">Body</param>
-        /// <returns></returns>
+        /// <param name="u">Datos del usuario a registrar.</param>
+        /// <response code="201">Usuario creado correctamente.</response>
+        /// <response code="400">Datos inválidos en la solicitud.</response>
+        /// <response code="500">Error interno del servidor.</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Crear(Usuario u)
         {
             try
             {
+                if (u == null)
+                    return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
                 var rs = await _usuarioRepository.Add(u);
                 u.IdUsuario = rs;
-                return Ok(u);
+                return CreatedAtAction(nameof(ListarPersona), new { id = u.IdUsuario }, new {Message =$"El usuario con id {u.IdUsuario} ha sido creado"});
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                return StatusCode(500, $"Error con el servidor: {ex.Message}");
             }
         }
 
 
         /// <summary>
-        /// Borrar persona
+        /// Elimina un usuario del sistema por su ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID del usuario a eliminar.</param>
+        /// <response code="200">Usuario eliminado correctamente.</response>
+        /// <response code="404">No se encontró el usuario con el ID especificado.</response>
+        /// <response code="500">Error interno del servidor.</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Borrar(int id)
         {
             
@@ -99,12 +106,19 @@ namespace MiApi.Controllers
 
 
         /// <summary>
-        /// Actualizar persona
+        /// Actualiza los datos de un usuario existente.
         /// </summary>
-        /// <param name="p"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID del usuario a actualizar.</param>
+        /// <param name="u">Datos actualizados del usuario.</param>
+        /// <response code="200">Usuario actualizado correctamente.</response>
+        /// <response code="400">Los datos enviados no son válidos.</response>
+        /// <response code="404">No se encontró el usuario con el ID especificado.</response>
+        /// <response code="500">Error interno del servidor.</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Actualizar([FromBody] Usuario u, [FromRoute] int id)
         {
             try
@@ -119,5 +133,12 @@ namespace MiApi.Controllers
                 throw;
             }
         }
+        /// <summary>
+        /// Buscar usuario por id
+        /// </summary>
+        /// <param name="id">Id usuario a buscar</param>
+        /// <response code="200">Cuando se encuentra el usuario</response>
+        /// <response code="404">El Usuario no existe</response>
+        /// <response code="500">Error procesando la peticion</response>
     }
 }

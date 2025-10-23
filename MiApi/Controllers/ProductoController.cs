@@ -26,10 +26,13 @@ namespace MiApi.Controllers
             _productoRepository = repository ?? throw new ArgumentException(nameof(repository));
         }
         /// <summary>
-        /// Metodo que lista todos los productos
+        /// Obtiene la lista completa de productos registrados.
         /// </summary>
-        /// <response code="200">Lista de productos</response>
-        /// <response code="500">Error procesando la peticion</response>
+        /// <response code="200">Lista de productos obtenida correctamente.</response>
+        /// <response code="500">Error interno del servidor.</response>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [ProducesResponseType(typeof(List<Producto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -43,15 +46,22 @@ namespace MiApi.Controllers
 
 
         /// <summary>
-        /// Metodo Que crea o añade los productos
+        /// Crea un nuevo producto en el sistema.
         /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
+        /// <param name="p">Objeto del producto a registrar. Debe contener nombre, descripción, tipo, precio y stock.</param>
+        /// <response code="201">Producto creado correctamente.</response>
+        /// <response code="400">Los datos enviados no son válidos.</response>
+        /// <response code="500">Error interno del servidor.</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AñadirProducto(Producto p)
         {
             try
             {
+                if (p == null)
+                    return BadRequest("El cuerpo de la solicitud no puede estar vacío.");
                 var rs = await _productoRepository.Add(p);
                 p.IdProducto = rs;
                 return Ok(p);
@@ -65,12 +75,19 @@ namespace MiApi.Controllers
 
 
         /// <summary>
-        /// Metodo para actualizar los productos
+        /// Actualiza los datos de un producto existente.
         /// </summary>
-        /// <param name="p"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Identificador del producto a actualizar.</param>
+        /// <param name="p">Datos actualizados del producto.</param>
+        /// <response code="200">Producto actualizado correctamente.</response>
+        /// <response code="400">Los datos enviados no son válidos o el ID no coincide.</response>
+        /// <response code="404">No se encontró el producto con el ID especificado.</response>
+        /// <response code="500">Error interno del servidor.</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Actualizar([FromBody] Producto p, [FromRoute] int id)
         {
             try
@@ -85,12 +102,19 @@ namespace MiApi.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
+
         /// <summary>
-        /// Metodo para eliminar productos mediante el id
+        /// Elimina un producto del sistema por su ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Identificador del producto a eliminar.</param>
+        /// <response code="200">Producto eliminado correctamente.</response>
+        /// <response code="404">No se encontró el producto con el ID especificado.</response>
+        /// <response code="500">Error interno del servidor.</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Borrar(int id)
         {
             try
