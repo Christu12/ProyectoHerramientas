@@ -22,6 +22,10 @@ namespace MiApi
             builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             builder.Services.AddTransient<IProductoQueries, ProductoQueries>();
             builder.Services.AddTransient<IProductoRepository, ProductoRepository>();
+            builder.Services.AddTransient<IVentaQueries, VentaQueries>();
+            builder.Services.AddTransient<IVentaRepository, VentaRepository>();
+            builder.Services.AddTransient<IDetalleVentaRepository, DetalleVentaRepository>();
+            builder.Services.AddTransient<IDetalleVentaQueries, DetalleVentaQueries>();
 
 
 
